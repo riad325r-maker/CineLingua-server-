@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإشعارات - CineLingua</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc;color:#0f172a;min-height:100vh;padding:2rem}
+        .container{max-width:750px;margin:0 auto}
+        .header{text-align:center;margin-bottom:2rem}
+        .header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:0.5rem}
+        .card{background:white;border-radius:1.5rem;padding:2rem;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:1.5rem;border:2px solid #e2e8f0}
+        .card h2{font-size:1.1rem;font-weight:700;color:#6366f1;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem}
+        .form-group{margin-bottom:1.2rem}
+        label{display:block;font-weight:600;margin-bottom:0.4rem;font-size:0.9rem;color:#374151}
+        input,textarea{width:100%;padding:0.8rem 1rem;border:2px solid #e2e8f0;border-radius:0.8rem;font-family:inherit;font-size:0.95rem;transition:border 0.2s;outline:none;background:#f8fafc;color:#0f172a}
+        input:focus,textarea:focus{border-color:#6366f1;background:white}
+        textarea{resize:vertical;min-height:80px}
+        .type-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;margin-bottom:1.2rem}
+        .type-btn{padding:0.9rem;border:2px solid #e2e8f0;border-radius:0.8rem;cursor:pointer;text-align:center;transition:all 0.2s;background:white;font-family:inherit;font-size:0.9rem;font-weight:600;color:#64748b}
+        .type-btn:hover{border-color:#6366f1;color:#6366f1}
+        .type-btn.active{background:linear-gradient(135deg,#6366f1,#ec4899);color:white;border-color:transparent}
+        .type-btn span{display:block;font-size:1.5rem;margin-bottom:0.3rem}
+        .send-btn{width:100%;padding:1rem;background:linear-gradient(135deg,#6366f1,#ec4899);color:white;border:none;border-radius:100px;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.3s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+        .send-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(99,102,241,0.4)}
+        .send-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none}
+        .preview-box{background:#f1f5f9;border-radius:1rem;padding:1rem 1.2rem;margin-top:0.5rem;display:flex;align-items:center;gap:0.8rem;border:2px dashed #cbd5e1}
+        .result{margin-top:1rem;padding:1rem;border-radius:0.8rem;text-align:center;font-weight:600;display:none}
+        .result.success{background:#dcfce7;color:#16a34a}
+        .result.error{background:#fee2e2;color:#dc2626}
+        .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem}
+        .stat-box{background:#f8fafc;border:2px solid #e2e8f0;border-radius:1rem;padding:1rem;text-align:center}
+        .stat-num{font-size:2rem;font-weight:800;color:#6366f1}
+        .stat-label{font-size:0.8rem;color:#64748b;margin-top:0.2rem}
+        .btn-sm{padding:0.5rem 1.2rem;border:none;border-radius:2rem;cursor:pointer;font-family:inherit;font-weight:600;font-size:0.88rem}
+        .server-status{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.82rem;padding:0.3rem 0.8rem;border-radius:2rem;font-weight:600;margin-left:0.5rem}
+        .status-ok{background:#dcfce7;color:#16a34a}
+        .status-err{background:#fee2e2;color:#dc2626}
+        .status-loading{background:#fef3c7;color:#92400e}
+    </style>
+</head>
+<body>
+
+<div style="display:flex;align-items:center;justify-content:center;min-height:90vh" id="loginScreen">
+    <div style="background:white;border-radius:2rem;padding:2.5rem;box-shadow:0 10px 40px rgba(0,0,0,0.12);border:2px solid #e2e8f0;width:100%;max-width:420px">
+        <div style="text-align:center;margin-bottom:1.5rem">
+            <div style="font-size:3rem;margin-bottom:0.5rem">🔔</div>
+            <h2 style="font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">لوحة الإشعارات</h2>
+            <p style="color:#64748b;font-size:0.9rem;margin-top:0.3rem">CineLingua</p>
+        </div>
+        <div class="form-group">
+            <label>رابط السيرفر (من Render)</label>
+            <input type="url" id="serverUrl" placeholder="https://goiueifomyxxbphiowjv.supabase.co/functions/v1/hyper-handler">
+        </div>
+        <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="adminPass" placeholder="cinelingua2026" onkeydown="if(event.key==='Enter')login()">
+        </div>
+        <button class="send-btn" onclick="login()" style="border-radius:0.8rem">
+            <i class="fas fa-sign-in-alt"></i> دخول
+        </button>
+        <div class="result" id="loginResult"></div>
+    </div>
+</div>
+
+<div class="container" id="mainPanel" style="display:none">
+    <div class="header">
+        <h1>🔔 لوحة الإشعارات</h1>
+        <p>CineLingua <span class="server-status status-loading" id="serverStatus"><i class="fas fa-circle-notch fa-spin"></i> جاري الاتصال...</span></p>
+    </div>
+
+    <div class="card">
+        <h2><i class="fas fa-users"></i> المشتركون</h2>
+        <div class="stat-grid">
+            <div class="stat-box"><div class="stat-num" id="totalSubs">—</div><div class="stat-label">إجمالي المشتركين</div></div>
+            <div class="stat-box"><div class="stat-num" id="mobileSubs">—</div><div class="stat-label">موبايل</div></div>
+            <div class="stat-box"><div class="stat-num" id="desktopSubs">—</div><div class="stat-label">كمبيوتر</div></div>
+        </div>
+        <button class="btn-sm" style="background:#6366f1;color:white" onclick="loadStats()"><i class="fas fa-sync-alt"></i> تحديث</button>
+    </div>
+
+    <div class="card">
+        <h2><i class="fas fa-paper-plane"></i> إرسال إشعار</h2>
+        <div class="form-group">
+            <label>نوع الإشعار</label>
+            <div class="type-grid">
+                <button class="type-btn active" data-type="update" onclick="selectType(this)"><span>🔄</span>تحديث جديد</button>
+                <button class="type-btn" data-type="content" onclick="selectType(this)"><span>📚</span>محتوى جديد</button>
+                <button class="type-btn" data-type="reminder" onclick="selectType(this)"><span>⏰</span>تذكير مذاكرة</button>
+                <button class="type-btn" data-type="promo" onclick="selectType(this)"><span>🎉</span>ترويجي</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>عنوان الإشعار</label>
+            <input type="text" id="notifTitle" value="تحديث جديد لـ CineLingua! 🚀" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+            <label>نص الإشعار</label>
+            <textarea id="notifBody" oninput="updatePreview()">الإصدار الجديد متوفر الآن مع ميزات رائعة. حمّله الآن!</textarea>
+        </div>
+        <div class="form-group">
+            <label>الرابط عند الضغط</label>
+            <input type="url" id="notifUrl" value="https://riad325r-maker.github.io/cine-lingua.-/download.html">
+        </div>
+        <label>معاينة</label>
+        <div class="preview-box" style="margin-bottom:1.5rem">
+            <div style="font-size:1.8rem" id="previewIcon">🔄</div>
+            <div>
+                <div style="font-weight:700;color:#0f172a;margin-bottom:0.2rem" id="previewTitle">تحديث جديد لـ CineLingua! 🚀</div>
+                <div style="font-size:0.88rem;color:#64748b" id="previewBody">الإصدار الجديد متوفر الآن مع ميزات رائعة. حمّله الآن!</div>
+            </div>
+        </div>
+        <button class="send-btn" onclick="sendNotification()" id="sendBtn">
+            <i class="fas fa-paper-plane"></i> إرسال للجميع
+        </button>
+        <div class="result" id="sendResult"></div>
+    </div>
+
+    <div style="text-align:center">
+        <button class="btn-sm" style="background:#f1f5f9;color:#374151;border:2px solid #e2e8f0" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+    </div>
+</div>
+
+<script>
+let SERVER_URL='',ADMIN_PASS='',selectedType='update';
+const typeIcons={update:'🔄',content:'📚',reminder:'⏰',promo:'🎉'};
+const templates={
+    update:{title:'تحديث جديد لـ CineLingua! 🚀',body:'الإصدار الجديد متوفر الآن مع ميزات رائعة. حمّله الآن!',url:'https://riad325r-maker.github.io/cine-lingua.-/download.html'},
+    content:{title:'محتوى جديد أضيف! 📚',body:'تم إضافة كلمات وقصص جديدة. تعلّم الآن!',url:'https://riad325r-maker.github.io/cine-lingua.-/lessons.html'},
+    reminder:{title:'وقت المذاكرة! ⏰',body:'لا تنس ممارسة الإنجليزية اليوم!',url:'https://riad325r-maker.github.io/cine-lingua.-/'},
+    promo:{title:'خبر رائع! 🎉',body:'شارك التطبيق مع أصدقائك!',url:'https://riad325r-maker.github.io/cine-lingua.-/'}
+};
+
+async function login(){
+    const url=document.getElementById('serverUrl').value.trim().replace(/\/$/,'');
+    const pass=document.getElementById('adminPass').value.trim();
+    const result=document.getElementById('loginResult');
+    if(!url||!pass)return showMsg(result,'error','⚠️ أدخل الرابط وكلمة المرور');
+    showMsg(result,'success','⏳ جاري الاتصال...');
+    try{
+        const res=await fetch(`${url}/subscribers`,{headers:{'x-admin-password':pass}});
+        if(res.status===401)return showMsg(result,'error','❌ كلمة المرور غير صحيحة');
+        if(!res.ok)throw new Error();
+        SERVER_URL=url;ADMIN_PASS=pass;
+        localStorage.setItem('cl_server',url);localStorage.setItem('cl_pass',pass);
+        document.getElementById('loginScreen').style.display='none';
+        document.getElementById('mainPanel').style.display='block';
+        loadStats();
+    }catch{showMsg(result,'error','❌ تعذر الاتصال. تأكد من رابط السيرفر');}
+}
+
+async function loadStats(){
+    const st=document.getElementById('serverStatus');
+    st.className='server-status status-loading';
+    st.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> جاري التحديث...';
+    try{
+        const res=await fetch(`${SERVER_URL}/subscribers`,{headers:{'x-admin-password':ADMIN_PASS}});
+        const data=await res.json();
+        let mobile=0,desktop=0;
+        (data.tokens||[]).forEach(t=>{
+            const p=(t.platform||'').toLowerCase();
+            if(p.includes('arm')||p.includes('android')||p.includes('iphone'))mobile++;else desktop++;
+        });
+        document.getElementById('totalSubs').textContent=data.count||0;
+        document.getElementById('mobileSubs').textContent=mobile;
+        document.getElementById('desktopSubs').textContent=desktop;
+        st.className='server-status status-ok';
+        st.innerHTML='<i class="fas fa-circle"></i> متصل';
+    }catch{st.className='server-status status-err';st.innerHTML='<i class="fas fa-circle"></i> غير متصل';}
+}
+
+async function sendNotification(){
+    const title=document.getElementById('notifTitle').value.trim();
+    const body=document.getElementById('notifBody').value.trim();
+    const url=document.getElementById('notifUrl').value.trim();
+    const btn=document.getElementById('sendBtn');
+    const result=document.getElementById('sendResult');
+    if(!title||!body)return showMsg(result,'error','⚠️ أدخل العنوان والنص');
+    btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+    try{
+        const res=await fetch(`${SERVER_URL}/send`,{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':ADMIN_PASS},body:JSON.stringify({title,body,url,type:selectedType})});
+        const data=await res.json();
+        if(data.success>0)showMsg(result,'success',`✅ ${data.message}${data.fail>0?` (فشل: ${data.fail})`:''}`)
+        else showMsg(result,'error',`⚠️ ${data.message||'فشل الإرسال'}`);
+    }catch{showMsg(result,'error','❌ خطأ في الاتصال بالسيرفر');}
+    btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i> إرسال للجميع';
+}
+
+function selectType(btn){
+    document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');selectedType=btn.dataset.type;
+    const t=templates[selectedType];
+    document.getElementById('notifTitle').value=t.title;
+    document.getElementById('notifBody').value=t.body;
+    document.getElementById('notifUrl').value=t.url;
+    updatePreview();
+}
+function updatePreview(){
+    document.getElementById('previewIcon').textContent=typeIcons[selectedType];
+    document.getElementById('previewTitle').textContent=document.getElementById('notifTitle').value||'العنوان';
+    document.getElementById('previewBody').textContent=document.getElementById('notifBody').value||'النص...';
+}
+function showMsg(el,type,msg){el.className=`result ${type}`;el.textContent=msg;el.style.display='block';if(type==='success')setTimeout(()=>el.style.display='none',7000);}
+function logout(){localStorage.removeItem('cl_server');localStorage.removeItem('cl_pass');location.reload();}
+window.onload=()=>{
+    const s=localStorage.getItem('cl_server') || 'https://goiueifomyxxbphiowjv.supabase.co/functions/v1/hyper-handler',p=localStorage.getItem('cl_pass');
+    if(s)document.getElementById('serverUrl').value=s;
+    if(p)document.getElementById('adminPass').value=p;
+};
+</script>
+</body>
+</html>
